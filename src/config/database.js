@@ -1,33 +1,29 @@
-import { PrismaClient } from "@prisma/client";
+import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import { PrismaClient } from "@prisma/client";
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = `${process.env.DATABASE_URL}`;
 
-const prisma = new PrismaClient({
-  adapter: new PrismaPg(new Pool({ connectionString })),
-  log:
-    process.env.NODE_ENV === "development"
-      ? ["query", "info", "warn", "error"]
-      : ["warn", "error"],
-});
-const connectDB = async () => {
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
+
+export { prisma };
+
+export const connectDB = async () => {
   try {
     await prisma.$connect();
-    console.log("✅ Berhasil terhubung ke database.");
+    console.log("✅ Berhasil terhubung ke database (Prisma 7 Mode)");
   } catch (error) {
-    console.error("❌ Gagal terhubung ke database:", error);
-    process.exit(1); // Keluar dari proses jika gagal terhubung
+    console.error("❌ Gagal terhubung:", error);
+    process.exit(1);
   }
 };
 
-const disconnectDB = async () => {
+export const disconnectDB = async () => {
   try {
     await prisma.$disconnect();
-    console.log("✅ Terputus dari database.");
+    console.log("✅ Database Disconnected");
   } catch (error) {
-    console.error("❌ Gagal memutuskan koneksi database:", error);
-    process.exit(1); // Keluar dari proses jika gagal memutuskan koneksi
+    console.error("❌ Disconnection Error:", error);
   }
 };
-export { connectDB, disconnectDB, prisma };

@@ -3,9 +3,7 @@ import { registerService } from "../../services/auth/register.service.js";
 import { successResponse } from "../../utils/apiResponse.js";
 
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
-
-  const user = await registerService(name, email, password);
+  const user = await registerService(req.body);
 
   return successResponse(res, "Registrasi berhasil", user);
 });

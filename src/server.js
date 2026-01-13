@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import { connectDB, disconnectDB } from "./config/database.js"; // Tambahkan disconnectDB
 import routes from "./routes/index.js";
+import errorHandler from "./middewares/error.middleware.js";
 
 config();
 
@@ -23,6 +24,9 @@ app.get("/", (req, res) => {
 
 // API Routes
 app.use("/api/v1", routes);
+
+// Error Handler Middleware
+app.use(errorHandler);
 
 // Simpan instance server ke dalam variabel
 const server = app.listen(PORT, () => {

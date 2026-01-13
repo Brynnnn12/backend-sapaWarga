@@ -10,6 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  
 }
 
 // Model untuk tabel users - Menyimpan data pengguna (warga dan admin)

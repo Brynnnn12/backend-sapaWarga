@@ -1,33 +1,30 @@
-import bcrypt from "bcrypt";
 import { prisma } from "../../config/database.js";
+import bcrypt from "bcrypt";
 
-export const registerService = async (name, email, password) => {
-  // Cek apakah email sudah terdaftar
+// src/services/auth/register.service.js
+export const registerService = async ({ name, email, password }) => {
+  // Pastikan email tidak undefined (tadi sudah kita debug, email sudah masuk)
   const existingUser = await prisma.user.findUnique({
-    where: { email },
+    where: {
+      email: email, // Email harus string dan unik di schema
+    },
   });
 
   if (existingUser) {
     throw new Error("Email sudah terdaftar");
   }
 
-  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Buat user baru dengan role "user"
   const user = await prisma.user.create({
     data: {
       name,
       email,
       password: hashedPassword,
-      role: "user",
+      role: "USER",
     },
     select: {
-      id: true,
       name: true,
-      email: true,
-      role: true,
-      createdAt: true,
     },
   });
 

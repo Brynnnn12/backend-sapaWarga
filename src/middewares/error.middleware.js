@@ -1,25 +1,33 @@
 const errorHandler = (err, req, res, next) => {
-  // Log error untuk debugging
   console.error(err.stack);
 
-  // Default status code
   let statusCode = err.statusCode || 500;
-  let message = err.message || "Internal Server Error";
+  let message = err.message || "Terjadi kesalahan internal server";
 
-  // Jika error dari validasi atau yang lain, sesuaikan
+  // Handle specific error types
   if (err.name === "ValidationError") {
     statusCode = 400;
-    message = "Validation Error";
+    message = "Error validasi data";
   } else if (err.name === "CastError") {
     statusCode = 400;
-    message = "Invalid ID format";
+    message = "Format ID tidak valid";
+  } else if (err.code === "P2002") {
+    // Prisma unique constraint error
+    statusCode = 409;
+    message = "Data sudah ada";
+  } else if (err.code === "P2025") {
+    // Prisma record not found
+    statusCode = 404;
+    message = "Data tidak ditemukan";
   }
 
-  // Response JSON
   res.status(statusCode).json({
     success: false,
     message,
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    ...(process.env.NODE_ENV === "development" && {
+      stack: err.stack,
+      error: err.message,
+    }),
   });
 };
 

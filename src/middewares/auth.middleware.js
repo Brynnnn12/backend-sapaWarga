@@ -51,7 +51,7 @@ export const isAdmin = (req, res, next) => {
     }
 
     // Cek role user
-    if (req.user.role !== "admin") {
+    if (req.user.role !== "ADMIN") {
       return res.status(403).json({
         success: false,
         message: "Akses ditolak. Hanya admin yang dapat mengakses fitur ini.",

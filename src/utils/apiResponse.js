@@ -55,7 +55,10 @@ export const paginatedResponse = (res, message, data, pagination) => {
 
 // Helper untuk response validation error
 export const validationErrorResponse = (res, errors) => {
-  return errorResponse(res, "Validation failed", 400, { errors });
+  return res.status(422).json({
+    success: false,
+    message: { errors },
+  });
 };
 
 // Helper untuk response unauthorized

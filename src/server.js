@@ -18,12 +18,25 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from public directory
+app.use("/uploads", express.static("public/uploads"));
+
 app.get("/", (req, res) => {
   res.send("Selamat datang di API Sapa Warga!");
 });
 
 // API Routes
 app.use("/api/v1", routes);
+
+// 404 Not Found Handler - harus ditempatkan setelah semua routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Endpoint tidak ditemukan",
+    path: req.originalUrl,
+    method: req.method,
+  });
+});
 
 // Error Handler Middleware
 app.use(errorHandler);

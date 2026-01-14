@@ -1,31 +1,37 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
-// Untuk mendapatkan __dirname di ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Konfigurasi storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Simpan di folder public/uploads di luar src
     const uploadPath = path.join(__dirname, "../../public/uploads");
+    console.log("Upload path:", uploadPath);
+
+    // Pastikan folder uploads ada
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+      console.log("Created uploads directory");
+    }
+
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    // Format nama: timestamp-randomstring-originalname.ext
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     const nameWithoutExt = path.basename(file.originalname, ext);
     const cleanName = nameWithoutExt
       .replace(/[^a-zA-Z0-9]/g, "-")
       .toLowerCase();
-    cb(null, `${uniqueSuffix}-${cleanName}${ext}`);
+    const filename = `${uniqueSuffix}-${cleanName}${ext}`;
+    console.log("Generated filename:", filename);
+    cb(null, filename);
   },
 });
 
-// Filter file - hanya jpg dan png
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
 
@@ -36,7 +42,6 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Konfigurasi upload
 export const upload = multer({
   storage: storage,
   fileFilter: fileFilter,

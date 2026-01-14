@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authRoute from "./auth.route.js";
 import complaintRoute from "./complaint.route.js";
+import commentRoute from "./comment.route.js";
 import { generalRateLimit } from "../middewares/rateLimit.middleware.js";
 
 const router = Router();
@@ -11,5 +12,6 @@ router.use(generalRateLimit);
 // Register all routes
 router.use("/auth", authRoute);
 router.use("/complaints", complaintRoute);
+router.use("/comments", commentRoute);
 
 export default router;
